@@ -6,6 +6,7 @@ import (
 	"github.com/lthibault/log"
 	"github.com/urfave/cli/v2"
 
+	"github.com/taylorjdawson/quiccat/internal/cmd/client"
 	"github.com/taylorjdawson/quiccat/internal/cmd/server"
 )
 
@@ -15,13 +16,13 @@ var flags = []cli.Flag{
 		Aliases: []string{"f"},
 		Usage:   "text, json, none",
 		Value:   "text",
-		EnvVars: []string{"WW_LOGFMT"},
+		EnvVars: []string{"LOGFMT"},
 	},
 	&cli.StringFlag{
 		Name:    "loglvl",
 		Usage:   "trace, debug, info, warn, error, fatal",
 		Value:   "info",
-		EnvVars: []string{"WW_LOGLVL"},
+		EnvVars: []string{"LOGLVL"},
 	},
 	&cli.BoolFlag{
 		Name:    "prettyprint",
@@ -33,12 +34,13 @@ var flags = []cli.Flag{
 
 var commands = []*cli.Command{
 	server.Command(),
+	client.Command(),
 }
 
 func main() {
 	app := cli.App{
-		Name:     "falcon",
-		Usage:    "low-latency mempool monitoring stack",
+		Name:     "quiccat",
+		Usage:    "simple, quic (pun), cli tool",
 		Flags:    flags,
 		Commands: commands,
 	}

@@ -8,7 +8,9 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
+	"io"
 	"math/big"
+	"os"
 
 	"github.com/lthibault/log"
 	quic "github.com/lucas-clemente/quic-go"
@@ -19,10 +21,10 @@ import (
 
 var flags = []cli.Flag{
 	&cli.StringFlag{
-		Name:    "port",
-		Aliases: []string{"p"},
-		Usage:   "server listen port",
-		EnvVars: []string{"PORT"},
+		Name:    "address",
+		Aliases: []string{"a"},
+		Usage:   "address server listens on",
+		EnvVars: []string{"ADDRESS"},
 	},
 }
 
@@ -75,9 +77,8 @@ func entry(qs *quicServer, lx fx.Lifecycle) {
 
 type quicServerConfig struct {
 	fx.In
-
+	C   *cli.Context
 	Log log.Logger
-	TLS *tls.Config
 }
 
 type quicServer struct {
@@ -92,6 +93,7 @@ type quicServer struct {
 func server(cfg quicServerConfig) *quicServer {
 	return &quicServer{
 		log:     cfg.Log.WithField("service", "server"),
+		addr:    cfg.C.String("address"),
 		tls:     generateTLSConfig(),
 		quicCfg: &quic.Config{KeepAlive: true},
 	}
@@ -147,6 +149,9 @@ func (h handler) HandleSession(ctx context.Context, sess quic.Session) {
 			return
 		}
 		h.log.WithField("stream-id", s.StreamID()).Info("stream accepted")
+		if _, err := io.Copy(os.Stdout, s); err != nil {
+			fmt.Println(err)
+		}
 	}
 }
 
