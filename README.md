@@ -1,6 +1,11 @@
 # Quiccat
 
 ## Usage
+Server
 ```bash
-qc 'quic url' -p 4532
+qc serve -a 'localhost:3333'
+```
+Client
+```bash
+qc client -a 'localhost:3333'
 ```
